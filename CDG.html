@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clode Design Gallery (CDG)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        header button {
+            padding: 5px 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        #upload-section, #gallery-section {
+            margin-bottom: 20px;
+        }
+
+        #upload-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #upload-form label {
+            margin-top: 10px;
+        }
+
+        #upload-form input, #upload-form textarea, #upload-form button {
+            margin-top: 5px;
+            padding: 10px;
+        }
+
+        #gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .artwork-card {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .artwork-card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .dark-mode {
+            background-color: #333;
+            color: #f0f0f0;
+        }
+
+        .dark-mode header {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .dark-mode .artwork-card {
+            background-color: #555;
+            border-color: #777;
+        }
+
+        .dark-mode .artwork-card button {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Clode Design Gallery (CDG)</h1>
+        <button id="theme-toggle">🌙</button>
+    </header>
+
+    <main>
+        <section id="upload-section">
+            <h2>Upload Your Artwork</h2>
+            <form id="upload-form">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" required>
+                
+                <label for="artwork">Artwork:</label>
+                <input type="file" id="artwork" accept="image/*" required>
+                
+                <label for="description">Description (optional):</label>
+                <textarea id="description" rows="4"></textarea>
+                
+                <button type="submit">Upload</button>
+            </form>
+        </section>
+
+        <section id="gallery-section">
+            <h2>Gallery</h2>
+            <div id="gallery"></div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('theme-toggle');
+            const uploadForm = document.getElementById('upload-form');
+            const gallery = document.getElementById('gallery');
+
+            // Toggle Dark/Light Mode
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            });
+
+            // Handle Artwork Upload
+            uploadForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const artwork = document.getElementById('artwork').files[0];
+                const description = document.getElementById('description').value;
+
+                if (artwork) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        addArtworkToGallery(name, e.target.result, description);
+                        uploadForm.reset();
+                    };
+                    reader.readAsDataURL(artwork);
+                }
+            });
+
+            // Add Artwork to Gallery
+            function addArtworkToGallery(name, artworkSrc, description) {
+                const card = document.createElement('div');
+                card.classList.add('artwork-card');
+
+                const img = document.createElement('img');
+                img.src = artworkSrc;
+                card.appendChild(img);
+
+                const nameElement = document.createElement('h3');
+                nameElement.textContent = name;
+                card.appendChild(nameElement);
+
+                if (description) {
+                    const descriptionElement = document.createElement('p');
+                    descriptionElement.textContent = description;
+                    card.appendChild(descriptionElement);
+                }
+
+                const commentSection = document.createElement('div');
+                const commentInputName = document.createElement('input');
+                commentInputName.placeholder = 'Your name';
+                const commentInput = document.createElement('input');
+                commentInput.placeholder = 'Add a comment';
+                const commentButton = document.createElement('button');
+                commentButton.textContent = 'Post';
+                commentButton.addEventListener('click', () => addComment(commentSection, commentInputName, commentInput));
+                card.appendChild(commentInputName);
+                card.appendChild(commentInput);
+                card.appendChild(commentButton);
+                card.appendChild(commentSection);
+
+                gallery.appendChild(card);
+            }
+
+            // Add Comment to Artwork
+            function addComment(section, inputName, input) {
+                if (input.value.trim() && inputName.value.trim()) {
+                    const comment = document.createElement('p');
+                    comment.textContent = `${inputName.value}: ${input.value}`;
+                    section.appendChild(comment);
+                    input.value = '';
+                    inputName.value = '';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
+               
+
